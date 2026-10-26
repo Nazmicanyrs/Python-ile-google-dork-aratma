@@ -1,114 +1,1990 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/index.css">
+    <title>DorkFinder Pro — Gelişmiş OSINT & Google Dork Arama Motoru</title>
+    <meta name="description" content="Siber güvenlik araştırmacıları ve analistler için gelişmiş Google Dork, sızıntı tespit ve OSINT arama motoru.">
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-    <div class="container">
-       <div class="menu">
-        <ul class="nav justify-content-center">
-            <li class="nav-item">
-              <a class="nav-link active" href="index.html">Anasayfa</a>
-            </li>
-          </ul>
-       </div>
+    <div class="app-wrapper">
+        <!-- Top Navbar -->
+        <header class="top-navbar">
+            <a href="index.html" class="brand-container">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-crosshairs"></i>
+                </div>
+                <div>
+                    <div class="brand-title">DorkFinder <span style="font-weight: 300;">PRO</span></div>
+                </div>
+                <span class="brand-badge"><i class="fa-solid fa-shield-halved"></i> OSINT Engine</span>
+            </a>
 
-       <div class="icerik d-flex justify-content-center">
-        <div class="card p-5">
-            <h5 class="baslik">Googlede aratma yapmak için bir şeyler yaz.</h5>
-            <hr>
-            <div class="isaretci">
-                <div class="row row-cols-auto">
-                    <div class="col">
-                        <input class="form-control" type="text" id="dork" placeholder="Dosya ismi veya kelime gir">
+            <div class="nav-actions">
+                <button type="button" class="nav-btn" id="themeToggleBtn" title="Temayı Değiştir" aria-label="Temayı Değiştir">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                    <span id="themeText">Karanlık</span>
+                </button>
+                <button type="button" class="nav-btn" id="shortcutsBtn" title="Klavye Kısayolları" aria-label="Kısayollar">
+                    <i class="fa-solid fa-keyboard"></i>
+                    <span>Kısayollar</span>
+                </button>
+                <a href="https://www.exploit-db.com/google-hacking-database" target="_blank" rel="noopener noreferrer" class="nav-btn" title="Google Hacking Database (GHDB)">
+                    <i class="fa-solid fa-database"></i>
+                    <span>GHDB Arşivi</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Hero & Search Center -->
+        <main>
+            <section class="hero-section">
+                <div class="hero-pill">
+                    <span class="pulse-dot"></span>
+                    <span>İstihbarat, Açık & Dosya Keşif Motoru</span>
+                </div>
+                <h1 class="hero-title">
+                    Hedef Bilgilere <span class="gradient-text">Dork ile Hızlıca</span> Ulaşın
+                </h1>
+                <p class="hero-subtitle">
+                    Gelişmiş arama operatörleriyle hassas veritabanları, konfigürasyon sızıntıları, açık dizinler ve dilediğiniz belge tiplerini tek tıkla tarayın.
+                </p>
+
+                <!-- Search Engine Provider Selection -->
+                <div class="engine-bar" id="engineSelector">
+                    <button type="button" class="engine-tab active" data-engine="google">
+                        <i class="fa-brands fa-google"></i> Google
+                    </button>
+                    <button type="button" class="engine-tab" data-engine="duckduckgo">
+                        <i class="fa-solid fa-shield"></i> DuckDuckGo
+                    </button>
+                    <button type="button" class="engine-tab" data-engine="bing">
+                        <i class="fa-brands fa-microsoft"></i> Bing
+                    </button>
+                    <button type="button" class="engine-tab" data-engine="yandex">
+                        <i class="fa-brands fa-yandex"></i> Yandex
+                    </button>
+                    <button type="button" class="engine-tab" data-engine="shodan">
+                        <i class="fa-solid fa-network-wired"></i> Shodan
+                    </button>
+                </div>
+            </section>
+
+            <!-- Search Engine Card -->
+            <section class="search-container">
+                <div class="search-box-card">
+                    <!-- Main Search Input -->
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass search-prefix-icon"></i>
+                        <input type="text" id="dorkInput" class="main-input" placeholder="Aranacak anahtar kelime, dork veya hedef ifade..." autocomplete="off" autofocus>
+                        
+                        <!-- Clear input button -->
+                        <button type="button" class="input-action-btn" id="clearBtn" title="Metni Temizle" style="display: none;">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+
+                        <!-- Voice Search (Microphone) -->
+                        <button type="button" class="input-action-btn" id="micBtn" title="Sesle Arama (Mikrofon)">
+                            <i class="fa-solid fa-microphone"></i>
+                        </button>
+
+                        <!-- Search Submit Button -->
+                        <button type="button" class="submit-search-btn" id="searchSubmitBtn">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>Arat</span>
+                        </button>
                     </div>
-                    <div class="col"><input class="btn btn-danger" py-click="ara()" type="submit" value="Arat"></div>
-                  </div>
-               </div>
 
-            <div class="secim">
-                <div class="row justify-content-center">
-                    <div class="col">
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            File
-                          </label>
-                          <select name="files" id="files">
-                            <option value=""></option>
-                            <option value="PDF">PDF</option>
-                            <option value="DOC">DOC</option>
-                            <option value="DOCX">DOCX</option>
-                            <option value="PPT">PPT</option>
-                            <option value="PPTX">PPTX</option>
-                            <option value="TXT">TXT</option>
-                            <option value="ZİP">ZİP</option>
-                            <option value="RAR">RAR</option>
-                          </select></div>
-                    <div class="col"><input class="form-check-input" type="radio" name="flexRadioDefault" id="baslik">
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            Başlık
-                          </label>
+                    <!-- Target Domain Filter -->
+                    <div class="target-site-wrapper">
+                        <span class="target-label"><i class="fa-solid fa-globe"></i> Hedef Site (Opsiyonel):</span>
+                        <input type="text" id="targetSiteInput" class="target-input" placeholder="Örn: hedefsite.com veya *.gov.tr (site:)">
+                    </div>
+
+                    <details class="advanced-options">
+                        <summary><i class="fa-solid fa-sliders"></i> Gelişmiş sorgu filtreleri</summary>
+                        <div class="advanced-fields">
+                            <label>Hariç tutulacak kelimeler<input id="excludeInput" type="text" class="target-input" placeholder="örn. forum örnek"></label>
+                            <label>Kesin ifade<input id="mustIncludeInput" type="text" class="target-input" placeholder="örn. güvenlik raporu"></label>
+                            <label>Başlangıç tarihi<input id="afterDateInput" type="date" class="target-input"></label>
+                            <label>Bitiş tarihi<input id="beforeDateInput" type="date" class="target-input"></label>
                         </div>
-                    <div class="col"><input class="form-check-input" type="radio" name="flexRadioDefault" id="alternatif">
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            Alternatif
-                          </label>
+                    </details>
+
+                    <!-- Category Mode Tabs -->
+                    <div class="category-tabs" id="categoryTabs">
+                        <button type="button" class="category-tab-btn active" data-cat="files">
+                            <i class="fa-solid fa-file-lines"></i> Dosya Tipleri (filetype)
+                        </button>
+                        <button type="button" class="category-tab-btn" data-cat="security">
+                            <i class="fa-solid fa-user-secret"></i> Güvenlik & Sızıntı (Leak)
+                        </button>
+                        <button type="button" class="category-tab-btn" data-cat="operators">
+                            <i class="fa-solid fa-code"></i> Operatörler (inurl, intitle)
+                        </button>
+                        <button type="button" class="category-tab-btn" data-cat="osint">
+                            <i class="fa-solid fa-people-robotic"></i> OSINT & Sosyal
+                        </button>
+                    </div>
+
+                    <!-- Category Content Panels -->
+                    <div class="dork-options-panel">
+                        <!-- Panel: Files -->
+                        <div class="chips-grid category-panel" id="panel-files">
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="pdf"><i class="fa-regular fa-file-pdf"></i> PDF</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="docx"><i class="fa-regular fa-file-word"></i> DOC / DOCX</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="xlsx"><i class="fa-regular fa-file-excel"></i> XLS / XLSX</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="pptx"><i class="fa-regular fa-file-powerpoint"></i> PPT / PPTX</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="txt"><i class="fa-regular fa-file-lines"></i> TXT</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="sql"><i class="fa-solid fa-database"></i> SQL</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="log"><i class="fa-solid fa-receipt"></i> LOG</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="env"><i class="fa-solid fa-key"></i> ENV</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="conf"><i class="fa-solid fa-sliders"></i> CONF / INI</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="zip"><i class="fa-regular fa-file-zipper"></i> ZIP / RAR</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="csv"><i class="fa-solid fa-table"></i> CSV</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="json"><i class="fa-solid fa-code"></i> JSON</button>
+                            <button type="button" class="chip-btn" data-type="filetype" data-val="xml"><i class="fa-solid fa-file-code"></i> XML</button>
                         </div>
-                    <div class="col"><input class="form-check-input" type="radio" name="flexRadioDefault" id="haber">
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            Haber
-                          </label></div>
-                  </div>
+
+                        <!-- Panel: Security & Leaks -->
+                        <div class="chips-grid category-panel" id="panel-security" style="display: none;">
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='filetype:env "DB_PASSWORD"'>
+                                <i class="fa-solid fa-unlock-keyhole"></i> .env Sızıntısı
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='intitle:"index of" "parent directory"'>
+                                <i class="fa-solid fa-folder-open"></i> Açık Dizin (Index of)
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='filetype:sql ("passwd" OR "password" OR "dump")'>
+                                <i class="fa-solid fa-database"></i> Veritabanı Dump
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='inurl:wp-config.php.bak OR inurl:wp-config.php.old'>
+                                <i class="fa-brands fa-wordpress"></i> wp-config Yedekleri
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='inurl:phpinfo.php OR intitle:"phpinfo()"'>
+                                <i class="fa-brands fa-php"></i> phpinfo() Açığı
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='inurl:admin OR inurl:login OR inurl:admin/login'>
+                                <i class="fa-solid fa-right-to-bracket"></i> Admin / Giriş Panelleri
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='filetype:log "error" OR "root" OR "admin"'>
+                                <i class="fa-solid fa-clipboard-list"></i> Sunucu Hata Logları
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='inurl:"/storage/logs/laravel.log"'>
+                                <i class="fa-brands fa-laravel"></i> Laravel Logları
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='filetype:git OR inurl:/.git'>
+                                <i class="fa-brands fa-git-alt"></i> İfşa Olmuş .git Klasörü
+                            </button>
+                        </div>
+
+                        <!-- Panel: Operators -->
+                        <div class="chips-grid category-panel" id="panel-operators" style="display: none;">
+                            <button type="button" class="chip-btn" data-type="op" data-val="intitle:"><i class="fa-solid fa-heading"></i> intitle: (Başlıkta)</button>
+                            <button type="button" class="chip-btn" data-type="op" data-val="allintitle:"><i class="fa-solid fa-heading"></i> allintitle: (Tüm Başlık)</button>
+                            <button type="button" class="chip-btn" data-type="op" data-val="inurl:"><i class="fa-solid fa-link"></i> inurl: (URL İçinde)</button>
+                            <button type="button" class="chip-btn" data-type="op" data-val="intext:"><i class="fa-solid fa-align-left"></i> intext: (İçerikte)</button>
+                            <button type="button" class="chip-btn" data-type="op" data-val="cache:"><i class="fa-solid fa-box-archive"></i> cache: (Önbellek)</button>
+                            <button type="button" class="chip-btn" data-type="op" data-val="related:"><i class="fa-solid fa-network-wired"></i> related: (Benzer Siteler)</button>
+                        </div>
+
+                        <!-- Panel: OSINT -->
+                        <div class="chips-grid category-panel" id="panel-osint" style="display: none;">
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:linkedin.com/in/'>
+                                <i class="fa-brands fa-linkedin"></i> LinkedIn Profilleri
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:github.com'>
+                                <i class="fa-brands fa-github"></i> GitHub Kod/Depo
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:pastebin.com'>
+                                <i class="fa-solid fa-paste"></i> Pastebin Sızıntıları
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:t.me OR inurl:t.me/joinchat'>
+                                <i class="fa-brands fa-telegram"></i> Telegram Kanalları
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:twitter.com OR site:x.com'>
+                                <i class="fa-brands fa-x-twitter"></i> X / Twitter
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:drive.google.com/drive/folders/'>
+                                <i class="fa-brands fa-google-drive"></i> Açık Google Drive Linkleri
+                            </button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:instagram.com'><i class="fa-brands fa-instagram"></i> Instagram</button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:tiktok.com'><i class="fa-brands fa-tiktok"></i> TikTok</button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:facebook.com'><i class="fa-brands fa-facebook"></i> Facebook</button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:reddit.com'><i class="fa-brands fa-reddit"></i> Reddit</button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:youtube.com'><i class="fa-brands fa-youtube"></i> YouTube</button>
+                            <button type="button" class="chip-btn" data-type="snippet" data-val='site:threads.net'><i class="fa-brands fa-threads"></i> Threads</button>
+                        </div>
+                    </div>
+
+                    <!-- Live Query Preview & Copy Box -->
+                    <div class="live-preview-box">
+                        <div class="preview-content">
+                            <span class="preview-label"><i class="fa-solid fa-terminal"></i> Canlı Sorgu:</span>
+                            <code id="liveDorkCode" class="preview-code">Henüz sorgu oluşturulmadı...</code>
+                        </div>
+                        <button type="button" class="copy-dork-btn" id="copyDorkBtn" title="Dork sorgusunu panoya kopyala">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Kopyala</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Presets Section -->
+            <section class="features-section" id="popularScenariosSection">
+                <div class="section-header presets-section-header">
+                    <div>
+                        <h2 class="section-title">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Popüler OSINT & Dork Senaryoları
+                        </h2>
+                        <p class="section-subtitle">DevSecOps, bulut altyapısı, kaynak kod ifşası, API sızıntıları ve teknik saldırı yüzeyi keşfi için gelişmiş derinlemesine senaryolar.</p>
+                    </div>
+                    <div class="preset-toolbar-right">
+                        <div class="preset-search-wrap">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="search" id="presetSearchInput" class="preset-search-input" placeholder="Senaryo ara (örn: git, jwt, k8s, env)...">
+                        </div>
+                        <span id="presetCountBadge" class="preset-count-badge">26 Senaryo</span>
+                    </div>
+                </div>
+
+                <!-- Scenario Category Filter Tabs -->
+                <div class="preset-filters-bar" id="presetFiltersBar">
+                    <button type="button" class="preset-filter-chip active" data-filter="all">
+                        <i class="fa-solid fa-layer-group"></i> Tümü <span class="filter-count">(26)</span>
+                    </button>
+                    <button type="button" class="preset-filter-chip" data-filter="source">
+                        <i class="fa-solid fa-code"></i> Kaynak Kod & Git <span class="filter-count">(3)</span>
+                    </button>
+                    <button type="button" class="preset-filter-chip" data-filter="secrets">
+                        <i class="fa-solid fa-key"></i> Secrets & Token <span class="filter-count">(3)</span>
+                    </button>
+                    <button type="button" class="preset-filter-chip" data-filter="cloud">
+                        <i class="fa-solid fa-cloud"></i> Bulut & K8s <span class="filter-count">(4)</span>
+                    </button>
+                    <button type="button" class="preset-filter-chip" data-filter="api">
+                        <i class="fa-solid fa-network-wired"></i> API & Endpoint <span class="filter-count">(3)</span>
+                    </button>
+                    <button type="button" class="preset-filter-chip" data-filter="db">
+                        <i class="fa-solid fa-database"></i> Veritabanı & Dump <span class="filter-count">(4)</span>
+                    </button>
+                    <button type="button" class="preset-filter-chip" data-filter="devops">
+                        <i class="fa-solid fa-gears"></i> DevOps & CI/CD <span class="filter-count">(4)</span>
+                    </button>
+                    <button type="button" class="preset-filter-chip" data-filter="debug">
+                        <i class="fa-solid fa-bug"></i> Hata & Debug <span class="filter-count">(3)</span>
+                    </button>
+                    <button type="button" class="preset-filter-chip" data-filter="recon">
+                        <i class="fa-solid fa-shield-halved"></i> OSINT & Keşif <span class="filter-count">(2)</span>
+                    </button>
+                </div>
+
+                <div class="preset-cards-grid" id="presetCardsGrid">
+                    <!-- 1. .env Secrets -->
+                    <div class="preset-card" data-category="secrets" data-preset-query='filetype:env "DB_PASSWORD" OR "APP_KEY" OR "AWS_SECRET_ACCESS_KEY"' data-preset-name="Ortam Değişkenleri (.env)">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-solid fa-key"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#secrets</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Ortam Değişkenleri (.env) & Şifreler</div>
+                        <div class="preset-desc">Veritabanı bağlantıları, JWT secret, AWS erişim anahtarları ve canlı SMTP parolalarını yakalar.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Doğrudan veritabanı ve bulut altyapısının tam yetkiyle ele geçirilmesi.</span>
+                        </div>
+                        <div class="preset-syntax" title='filetype:env "DB_PASSWORD" OR "APP_KEY"'>
+                            <code>filetype:env "DB_PASSWORD" "APP_KEY"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. Git Repository -->
+                    <div class="preset-card" data-category="source" data-preset-query='inurl:/.git/HEAD OR inurl:/.git/config' data-preset-name="Açık .git Deposu">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-brands fa-git-alt"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#git #vcs</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık Git Deposu (.git/HEAD & config)</div>
+                        <div class="preset-desc">Web kök dizininde unutulmuş ve dışarıdan okunabilen .git sürüm kontrol verilerini tespit eder.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: git-dumper araçlarıyla tüm kaynak kodun, commit'lerin ve gizli anahtarların indirilmesi.</span>
+                        </div>
+                        <div class="preset-syntax" title="inurl:/.git/HEAD OR inurl:/.git/config">
+                            <code>inurl:/.git/HEAD OR inurl:/.git/config</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3. Source Code Backups -->
+                    <div class="preset-card" data-category="source" data-preset-query='inurl:backup OR inurl:dump filetype:tar.gz OR filetype:zip OR filetype:sql.gz' data-preset-name="Kaynak Kod Yedek Arşivleri">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-solid fa-box-archive"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#backups</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Tam Kaynak Kod & Web Yedekleri</div>
+                        <div class="preset-desc">Sunucu bakımı sırasında unutulan backup.tar.gz, site-dump.zip veya database.sql.gz arşivleri.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Sistemin tüm veritabanı tabloları ve kaynak kodunun tek bağlantıyla sızdırılması.</span>
+                        </div>
+                        <div class="preset-syntax" title="inurl:backup filetype:tar.gz OR filetype:zip">
+                            <code>inurl:backup filetype:tar.gz OR filetype:zip</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 4. .gitignore & Internal Architecture -->
+                    <div class="preset-card" data-category="source" data-preset-query='filetype:gitignore "node_modules" OR "vendor" OR ".env"' data-preset-name="İfşa Olmuş .gitignore">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-amber"><i class="fa-solid fa-file-code"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-high">Yüksek (P2)</span>
+                                <span class="preset-tag">#recon #arch</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">İfşa Olmuş .gitignore & Dizin Haritası</div>
+                        <div class="preset-desc">Projeye ait gizli dizin isimleri, derleme hedefleri ve harici eklenti yapısını gün yüzüne çıkarır.</div>
+                        <div class="preset-technical-impact impact-amber">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Saldırganın gizli endpoint ve kütüphane bağımlılıklarını haritalandırmasını sağlar.</span>
+                        </div>
+                        <div class="preset-syntax" title='filetype:gitignore ".env" "node_modules"'>
+                            <code>filetype:gitignore ".env" "node_modules"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 5. Private Keys -->
+                    <div class="preset-card" data-category="secrets" data-preset-query='filetype:pem OR filetype:key "BEGIN RSA PRIVATE KEY" OR "BEGIN OPENSSH PRIVATE KEY"' data-preset-name="SSH & SSL Özel Anahtarları">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#pki #ssh</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">SSH & SSL Private Key Sızıntıları</div>
+                        <div class="preset-desc">Sunucuya şifresiz uzaktan erişim sağlayan veya SSL trafiğini çözen özel PEM/KEY anahtarları.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Doğrudan sunucu root erişimi veya uçtan uca şifrelenmiş trafiğin çözülmesi.</span>
+                        </div>
+                        <div class="preset-syntax" title='filetype:pem "BEGIN RSA PRIVATE KEY"'>
+                            <code>filetype:pem "BEGIN RSA PRIVATE KEY"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 6. JWT & Auth Tokens -->
+                    <div class="preset-card" data-category="secrets" data-preset-query='"eyJhbGciOi" intext:"secret" OR intext:"Bearer" filetype:json OR filetype:log OR filetype:txt' data-preset-name="Sızdırılmış Canlı JWT Tokenları">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-amber"><i class="fa-solid fa-ticket"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-high">Yüksek (P2)</span>
+                                <span class="preset-tag">#jwt #tokens</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Canlı JWT Belirteçleri & Auth Sırları</div>
+                        <div class="preset-desc">Base64 encoded eyJhbGciOi başlığıyla başlayan aktif JSON Web Token ve Bearer yetki anahtarları.</div>
+                        <div class="preset-technical-impact impact-amber">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Oturum çalma (Session Hijacking) ve API servisleri arasında yetkisiz işlem yürütme.</span>
+                        </div>
+                        <div class="preset-syntax" title='"eyJhbGciOi" intext:"Bearer" filetype:json'>
+                            <code>"eyJhbGciOi" intext:"Bearer" filetype:json</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 7. AWS S3 & Azure Blob -->
+                    <div class="preset-card" data-category="cloud" data-preset-query='site:s3.amazonaws.com OR site:blob.core.windows.net "confidential" OR "backup" OR "database"' data-preset-name="Açık AWS S3 & Azure Blob">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-brands fa-aws"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#aws #azure</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık AWS S3 & Azure Blob Depoları</div>
+                        <div class="preset-desc">Yanlış ACL izinleri nedeniyle kamuya açık (public) bırakılmış kurumsal bulut nesne depolama alanları.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Şirket içi belgelerin, kimlik kopyalarının ve veri ambarı dökümlerinin toplu sızması.</span>
+                        </div>
+                        <div class="preset-syntax" title='site:s3.amazonaws.com "confidential" OR "backup"'>
+                            <code>site:s3.amazonaws.com "confidential" OR "backup"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 8. Kubernetes Dashboard -->
+                    <div class="preset-card" data-category="cloud" data-preset-query='intitle:"Dashboard - Kubernetes" OR inurl:":8443/api/v1" OR inurl:":6443"' data-preset-name="Kubernetes Dashboard & API">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-solid fa-dharmachakra"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#k8s #cloud</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Kubernetes Dashboard & API Sunucuları</div>
+                        <div class="preset-desc">İnternete doğrudan açık kontrol düzlemi arayüzleri ve kimlik doğrulamasız bırakılan K8s panelleri.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Kümede pod başlatma, konteyner kaçışı ve tüm altyapıda uzaktan kod çalıştırma (RCE).</span>
+                        </div>
+                        <div class="preset-syntax" title='intitle:"Dashboard - Kubernetes" OR inurl:":8443/api/v1"'>
+                            <code>intitle:"Dashboard - Kubernetes"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 9. Docker Registry V2 -->
+                    <div class="preset-card" data-category="cloud" data-preset-query='inurl:"/v2/_catalog" OR intitle:"Docker Registry UI"' data-preset-name="Açık Docker Registry">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-cyan"><i class="fa-brands fa-docker"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-high">Yüksek (P2)</span>
+                                <span class="preset-tag">#docker #registry</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık Docker Registry V2 Kataloğu</div>
+                        <div class="preset-desc">Kurum içi özel Docker imajlarının depolandığı ve şifresiz katalog listelemesi sunan registry uçları.</div>
+                        <div class="preset-technical-impact impact-cyan">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Özel üretim imajlarının çekilmesi ve katmanlardaki gömülü secret'ların çıkarılması.</span>
+                        </div>
+                        <div class="preset-syntax" title='inurl:"/v2/_catalog" OR intitle:"Docker Registry UI"'>
+                            <code>inurl:"/v2/_catalog"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 10. Firebase Realtime DB -->
+                    <div class="preset-card" data-category="cloud" data-preset-query='site:firebaseio.com inurl:".json"' data-preset-name="Açık Firebase DB">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-amber"><i class="fa-solid fa-fire"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-high">Yüksek (P2)</span>
+                                <span class="preset-tag">#firebase #nosql</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık Firebase Realtime DB (.json)</div>
+                        <div class="preset-desc">Kurallarda ".read: true" unutularak herkese açık bırakılmış NoSQL Firebase veritabanı uçları.</div>
+                        <div class="preset-technical-impact impact-amber">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Mobil ve web uygulamalarının tüm kullanıcı veritabanının JSON formatında tek tıkla indirilmesi.</span>
+                        </div>
+                        <div class="preset-syntax" title='site:firebaseio.com inurl:".json"'>
+                            <code>site:firebaseio.com inurl:".json"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 11. Swagger / OpenAPI -->
+                    <div class="preset-card" data-category="api" data-preset-query='inurl:"/swagger-ui.html" OR inurl:"/api-docs" OR intitle:"Swagger UI" OR inurl:"/v2/api-docs"' data-preset-name="Açık Swagger / OpenAPI">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-emerald"><i class="fa-solid fa-network-wired"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-info">API Keşfi</span>
+                                <span class="preset-tag">#swagger #api</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık Swagger / OpenAPI Portalları</div>
+                        <div class="preset-desc">Tüm REST endpoint'lerini, veri modellerini, parametre tiplerini sergileyen canlı API arayüzleri.</div>
+                        <div class="preset-technical-impact impact-emerald">
+                            <i class="fa-solid fa-circle-nodes"></i>
+                            <span>Saldırı Yüzeyi: Gizli test uçlarının, yetkisiz IDOR açıklarının ve SQL enjeksiyon noktalarının keşfi.</span>
+                        </div>
+                        <div class="preset-syntax" title='inurl:"/swagger-ui.html" OR intitle:"Swagger UI"'>
+                            <code>inurl:"/swagger-ui.html" OR intitle:"Swagger UI"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 12. GraphQL & Introspection -->
+                    <div class="preset-card" data-category="api" data-preset-query='inurl:"/graphql" OR inurl:"/graphiql" OR intitle:"GraphQL Playground"' data-preset-name="GraphQL Playground & Uçları">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-purple"><i class="fa-solid fa-diagram-project"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-purple">GraphQL</span>
+                                <span class="preset-tag">#graphql #api</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">GraphQL Uç Noktaları & Playground</div>
+                        <div class="preset-desc">Schema Introspection açık bırakılmış interaktif GraphQL test ve sorgulama konsolları.</div>
+                        <div class="preset-technical-impact impact-purple">
+                            <i class="fa-solid fa-circle-nodes"></i>
+                            <span>Saldırı Yüzeyi: Veritabanı modellerinin, gizli alanların ve mutation yetkilerinin açığa çıkarılması.</span>
+                        </div>
+                        <div class="preset-syntax" title='inurl:"/graphiql" OR intitle:"GraphQL Playground"'>
+                            <code>inurl:"/graphiql" OR intitle:"GraphQL Playground"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 13. Spring Boot Actuator -->
+                    <div class="preset-card" data-category="api" data-preset-query='inurl:"/actuator/env" OR inurl:"/actuator/heapdump" OR inurl:"/actuator/mappings"' data-preset-name="Spring Boot Actuator İfşası">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-brands fa-java"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#springboot #java</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Spring Boot Actuator & Heap Dump</div>
+                        <div class="preset-desc">Java Spring Boot uygulamalarında bellek dökümü ve ortam parametrelerini dışa açan actuator servisleri.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: /heapdump dosyası ile bellekteki açık şifrelerin, oturumların ve token'ların sızdırılması.</span>
+                        </div>
+                        <div class="preset-syntax" title='inurl:"/actuator/heapdump" OR inurl:"/actuator/env"'>
+                            <code>inurl:"/actuator/heapdump" OR inurl:"/actuator/env"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 14. SQLite Databases -->
+                    <div class="preset-card" data-category="db" data-preset-query='intitle:"index of" "database.sqlite" OR filetype:sqlite OR filetype:db' data-preset-name="SQLite DB Dosyaları">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-solid fa-database"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#sqlite #db</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık SQLite DB Dosyaları</div>
+                        <div class="preset-desc">Dizin listelemesi açık olan sunuculardaki doğrudan indirilebilir SQLite ve .db veritabanı kopyaları.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Veritabanı şemasının, yönetici parolalarının ve tüm kayıtların tek dosyada indirilmesi.</span>
+                        </div>
+                        <div class="preset-syntax" title='intitle:"index of" "database.sqlite" OR filetype:sqlite'>
+                            <code>intitle:"index of" "database.sqlite"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 15. SQL Dump & INSERT Statements -->
+                    <div class="preset-card" data-category="db" data-preset-query='filetype:sql ("INSERT INTO" AND "password" OR "passwd" OR "dump")' data-preset-name="SQL Tablo Dump & INSERT">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-solid fa-table"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#sqldump #sql</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">SQL Tablo Dump & INSERT Komutları</div>
+                        <div class="preset-desc">mysqldump ile alınıp web dizininde unutulmuş, parola ve kullanıcı tablosu içeren ham SQL dökümleri.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Müşteri verileri, kimlik bilgileri ve şifre hash'lerinin topluca internete sızması.</span>
+                        </div>
+                        <div class="preset-syntax" title='filetype:sql ("INSERT INTO" AND "password")'>
+                            <code>filetype:sql "INSERT INTO" "password"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 16. phpMyAdmin & Adminer -->
+                    <div class="preset-card" data-category="db" data-preset-query='inurl:"/phpmyadmin/index.php" OR inurl:"adminer.php" OR intitle:"phpMyAdmin"' data-preset-name="phpMyAdmin & Adminer Girişleri">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-amber"><i class="fa-solid fa-server"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-high">Yüksek (P2)</span>
+                                <span class="preset-tag">#phpmyadmin #db</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık phpMyAdmin & Adminer Girişleri</div>
+                        <div class="preset-desc">Doğrudan internete açık web tabanlı SQL veritabanı yönetim arayüzleri ve giriş formları.</div>
+                        <div class="preset-technical-impact impact-amber">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Kaba kuvvet (brute-force) veya zayıf root parolaları ile sunucu veritabanı denetimi.</span>
+                        </div>
+                        <div class="preset-syntax" title='inurl:"/phpmyadmin/index.php" OR inurl:"adminer.php"'>
+                            <code>inurl:"/phpmyadmin/index.php" OR inurl:"adminer.php"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 17. Kibana & Elasticsearch -->
+                    <div class="preset-card" data-category="db" data-preset-query='intitle:"Kibana" inurl:":5601" OR inurl:":9200/_cat/indices"' data-preset-name="Kibana & Elasticsearch">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-cyan"><i class="fa-solid fa-chart-pie"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-medium">Veri Ambarı</span>
+                                <span class="preset-tag">#elastic #kibana</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık Kibana & Elasticsearch İndeksleri</div>
+                        <div class="preset-desc">Kimlik doğrulamasız bırakılan Elasticsearch indeksleri ve merkezi log analitik panelleri.</div>
+                        <div class="preset-technical-impact impact-cyan">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Saldırı Yüzeyi: Tüm sistem loglarının, finansal işlemlerin ve kullanıcı aktivitelerinin sızması.</span>
+                        </div>
+                        <div class="preset-syntax" title='intitle:"Kibana" inurl:":5601"'>
+                            <code>intitle:"Kibana" inurl:":5601"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 18. Jenkins CI/CD -->
+                    <div class="preset-card" data-category="devops" data-preset-query='intitle:"Dashboard [Jenkins]" OR intitle:"Jenkins" inurl:":8080"' data-preset-name="Jenkins CI/CD Panelleri">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-solid fa-gears"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#jenkins #ci-cd</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık Jenkins Otomasyon & Derleme Panelleri</div>
+                        <div class="preset-desc">Anonim erişime izin verilmiş Jenkins CI/CD sunucuları, build logları ve konsol çıktıları.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Groovy script console ile sunucu işletim sisteminde tam yetkili RCE (Uzaktan Kod Çalıştırma).</span>
+                        </div>
+                        <div class="preset-syntax" title='intitle:"Dashboard [Jenkins]" inurl:":8080"'>
+                            <code>intitle:"Dashboard [Jenkins]" inurl:":8080"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 19. ArgoCD & GitLab -->
+                    <div class="preset-card" data-category="devops" data-preset-query='intitle:"Argo CD" OR inurl:"/auth/login?return_url" OR intitle:"GitLab Sign In"' data-preset-name="ArgoCD & GitLab Girişleri">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-purple"><i class="fa-solid fa-rocket"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-purple">DevOps</span>
+                                <span class="preset-tag">#argocd #gitlab</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">ArgoCD & GitLab Dağıtım Portalları</div>
+                        <div class="preset-desc">Üretim kümesine mikroservis dağıtan GitOps ve kurumsal kod depolama portallarının tespiti.</div>
+                        <div class="preset-technical-impact impact-purple">
+                            <i class="fa-solid fa-diagram-project"></i>
+                            <span>Saldırı Yüzeyi: Dağıtım boru hattına zararlı commit enjeksiyonu ve altyapı sabote etme riski.</span>
+                        </div>
+                        <div class="preset-syntax" title='intitle:"Argo CD" OR intitle:"GitLab Sign In"'>
+                            <code>intitle:"Argo CD" OR intitle:"GitLab Sign In"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 20. Prometheus Metrics -->
+                    <div class="preset-card" data-category="devops" data-preset-query='inurl:"/metrics" intext:"go_goroutines" OR intext:"process_cpu_seconds_total"' data-preset-name="Açık Prometheus Metrikleri">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-cyan"><i class="fa-solid fa-wave-square"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-medium">İzleme</span>
+                                <span class="preset-tag">#metrics #devops</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık Prometheus Metrikleri (/metrics)</div>
+                        <div class="preset-desc">Kamuya açık HTTP /metrics uç noktalarından canlı sistem, CPU ve thread istatistikleri sunar.</div>
+                        <div class="preset-technical-impact impact-cyan">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Saldırı Yüzeyi: İç IP blokları, mikroservis isimleri ve sunucu anlık yük durumunun tam haritalanması.</span>
+                        </div>
+                        <div class="preset-syntax" title='inurl:"/metrics" intext:"go_goroutines"'>
+                            <code>inurl:"/metrics" intext:"go_goroutines"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 21. SonarQube -->
+                    <div class="preset-card" data-category="devops" data-preset-query='intitle:"SonarQube" inurl:"/projects"' data-preset-name="Açık SonarQube Panelleri">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-blue"><i class="fa-solid fa-code-compare"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-medium">DevSecOps</span>
+                                <span class="preset-tag">#sonarqube</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Açık SonarQube Kod Kalite Panelleri</div>
+                        <div class="preset-desc">Statik kod analizi (SAST), zafiyet raporları ve güvenlik açıklarını sergileyen açık dashboardlar.</div>
+                        <div class="preset-technical-impact impact-cyan">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: Yazılımdaki bilinen zafiyetlerin ve güvenlik borçlarının saldırganlarca tek tıkla okunması.</span>
+                        </div>
+                        <div class="preset-syntax" title='intitle:"SonarQube" inurl:"/projects"'>
+                            <code>intitle:"SonarQube" inurl:"/projects"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 22. Laravel Whoops Debug -->
+                    <div class="preset-card" data-category="debug" data-preset-query='intext:"Whoops! There was an error" intext:"Environment & details"' data-preset-name="Laravel Debug Sızıntısı">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-rose"><i class="fa-brands fa-laravel"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-critical">Kritik (P1)</span>
+                                <span class="preset-tag">#laravel #debug</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Laravel Debug Modu (Whoops!)</div>
+                        <div class="preset-desc">Canlıda APP_DEBUG=true unutulan Laravel sitelerindeki detaylı hata ekranı ve ortam değişkenleri.</div>
+                        <div class="preset-technical-impact">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: DB parolaları, APP_KEY ve oturum şifreleme anahtarlarının hata sayfasında açıkça ifşası.</span>
+                        </div>
+                        <div class="preset-syntax" title='intext:"Whoops! There was an error"'>
+                            <code>intext:"Whoops! There was an error"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 23. Django Traceback -->
+                    <div class="preset-card" data-category="debug" data-preset-query='intext:"DisallowedHost at /" OR intext:"django.core.exceptions" intext:"Request Method"' data-preset-name="Django Debug Traceback">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-amber"><i class="fa-brands fa-python"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-high">Yüksek (P2)</span>
+                                <span class="preset-tag">#django #python</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Django Debug Ekranı & Traceback</div>
+                        <div class="preset-desc">DEBUG=True bırakılan Django sunucularında üretilen detaylı hata ve kaynak kod iz sürme ekranı.</div>
+                        <div class="preset-technical-impact impact-amber">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Saldırı Yüzeyi: SQL sorguları, yerel değişken değerleri ve kullanılan Python kütüphane sürümlerinin ifşası.</span>
+                        </div>
+                        <div class="preset-syntax" title='intext:"DisallowedHost at /" intext:"Django Version"'>
+                            <code>intext:"DisallowedHost at /" intext:"Django"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 24. phpinfo() -->
+                    <div class="preset-card" data-category="debug" data-preset-query='inurl:phpinfo.php OR intitle:"phpinfo()" "Configuration File (php.ini) Path"' data-preset-name="phpinfo() Bilgi İfşası">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-emerald"><i class="fa-brands fa-php"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-info">Bilgi (P3)</span>
+                                <span class="preset-tag">#php #hardening</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">phpinfo() & Sunucu Yapılandırması</div>
+                        <div class="preset-desc">Geliştiricilerin test sonrası silmeyi unuttuğu PHP yapılandırma, derleme ve modül dökümü.</div>
+                        <div class="preset-technical-impact impact-emerald">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>Saldırı Yüzeyi: Sunucu yolları, işletim sistemi çekirdeği, cURL konfigürasyonu ve $_ENV değişkenleri.</span>
+                        </div>
+                        <div class="preset-syntax" title='inurl:phpinfo.php OR intitle:"phpinfo()"'>
+                            <code>inurl:phpinfo.php OR intitle:"phpinfo()"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 25. Sensitive Documents -->
+                    <div class="preset-card" data-category="recon" data-preset-query='filetype:pdf OR filetype:xlsx "confidential" OR "gizli" OR "mali rapor"' data-preset-name="Hassas PDF / Excel Belgeleri">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-blue"><i class="fa-regular fa-file-pdf"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-medium">Belge</span>
+                                <span class="preset-tag">#osint #docs</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Hassas Kurumsal PDF & Excel Belgeleri</div>
+                        <div class="preset-desc">Arama motorlarınca indekslenmiş kurumsal mali tablolar, müşteri listeleri ve gizli şirket verileri.</div>
+                        <div class="preset-technical-impact impact-cyan">
+                            <i class="fa-solid fa-file-shield"></i>
+                            <span>Saldırı Yüzeyi: Sosyal mühendislik ve istihbarat saldırıları için kritik iç yazışmalar ve kurumsal raporlar.</span>
+                        </div>
+                        <div class="preset-syntax" title='filetype:pdf "confidential" OR "gizli"'>
+                            <code>filetype:pdf "confidential" OR "gizli"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 26. IP Cameras -->
+                    <div class="preset-card" data-category="recon" data-preset-query='inurl:"/view/index.shtml" OR intitle:"Live View / - AXIS"' data-preset-name="Açık IP Kameralar & IoT">
+                        <div class="preset-card-top">
+                            <div class="preset-icon icon-purple"><i class="fa-solid fa-video"></i></div>
+                            <div class="preset-badges">
+                                <span class="preset-badge badge-purple">IoT</span>
+                                <span class="preset-tag">#iot #camera</span>
+                            </div>
+                        </div>
+                        <div class="preset-name">Canlı Yayın Yapan Kameralar & IoT</div>
+                        <div class="preset-desc">Şifresiz veya varsayılan kimlik bilgileriyle doğrudan internete açık güvenlik ve trafik kameraları.</div>
+                        <div class="preset-technical-impact impact-purple">
+                            <i class="fa-solid fa-video"></i>
+                            <span>Saldırı Yüzeyi: Fiziksel tesislerin, ofislerin ve veri merkezlerinin canlı video akışının gözetlenmesi.</span>
+                        </div>
+                        <div class="preset-syntax" title='intitle:"Live View / - AXIS"'>
+                            <code>intitle:"Live View / - AXIS"</code>
+                        </div>
+                        <div class="preset-card-actions">
+                            <button type="button" class="preset-action-btn btn-apply" title="Sorgu Girişine Yükle">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Sorguya Al
+                            </button>
+                            <button type="button" class="preset-action-btn btn-direct-search" title="Seçili Motorda Doğrudan Ara">
+                                <i class="fa-solid fa-bolt"></i> Ara
+                            </button>
+                            <button type="button" class="preset-action-btn btn-copy" title="Dork Kodunu Kopyala">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="ghdb-section features-section" id="ghdbCatalog">
+                <div class="section-header ghdb-header">
+                    <div>
+                        <h2 class="section-title"><i class="fa-solid fa-database"></i> GHDB Dork Kataloğu</h2>
+                        <p class="ghdb-intro">Exploit-DB arşivini yerel olarak yükleyin; sorguları arayın, kategoriye göre süzün ve seçtiklerinizi arama alanına aktarın.</p>
+                    </div>
+                    <div class="ghdb-actions">
+                <button type="button" class="nav-btn" id="loadGhdbBtn"><i class="fa-solid fa-box-open"></i> Paketteki Arşivi Yeniden Yükle</button>
+                        <a class="nav-btn" href="https://gitlab.com/exploit-database/exploitdb/-/raw/main/ghdb.xml" target="_blank" rel="noopener noreferrer" download="ghdb.xml"><i class="fa-solid fa-download"></i> XML İndir</a>
+                        <button type="button" class="nav-btn" id="importGhdbBtn"><i class="fa-solid fa-file-import"></i> XML İçe Aktar</button>
+                        <button type="button" class="nav-btn" id="exportGhdbBtn" disabled><i class="fa-solid fa-file-export"></i> JSON Dışa Aktar</button>
+                        <input type="file" id="ghdbFileInput" accept=".xml,text/xml,application/xml" hidden>
+                    </div>
+                </div>
+                <div class="ghdb-toolbar">
+                    <input type="search" id="ghdbSearchInput" class="target-input" placeholder="Dork, kategori, açıklama veya yazar ara..." disabled>
+                    <select id="ghdbCategorySelect" class="target-input" disabled><option value="">Tüm kategoriler</option></select>
+                    <span id="ghdbCount" class="ghdb-count">Arşiv yüklenmedi</span>
+                </div>
+                <div id="ghdbStatus" class="ghdb-status" role="status" aria-live="polite">Projeye ekli GHDB arşivi yükleniyor; internet bağlantısı gerekmez.</div>
+                <div id="ghdbResults" class="ghdb-results"></div>
+                <div class="ghdb-pagination">
+                    <button type="button" class="nav-btn" id="ghdbPrevBtn" disabled><i class="fa-solid fa-chevron-left"></i> Önceki</button>
+                    <span id="ghdbPageLabel">—</span>
+                    <button type="button" class="nav-btn" id="ghdbNextBtn" disabled>Sonraki <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <p class="ghdb-attribution">Kaynak: <a href="https://www.exploit-db.com/google-hacking-database" target="_blank" rel="noopener noreferrer">Exploit-DB / OffSec GHDB</a>. Resmî depo, tüm kayıtlara açık XML arşivi sunar. Kayıtları yalnızca yetkili test kapsamınızda kullanın.</p>
+            </section>
+
+            <!-- History Section -->
+            <section class="history-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Son Aramalar
+                    </h2>
+                    <button type="button" class="nav-btn" id="clearHistoryBtn" style="font-size: 0.75rem;">
+                        <i class="fa-solid fa-trash-can"></i> Geçmişi Temizle
+                    </button>
+                </div>
+                <div class="history-tags" id="historyContainer">
+                    <span class="empty-history">Henüz geçmiş aramanız bulunmuyor.</span>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p><strong>DorkFinder PRO</strong> — Gelişmiş Açık Kaynak İstihbarat & Dork Keşif Platformu</p>
+                <div class="footer-links">
+                    <a href="https://github.com/Nazmicanyrs/Python-ile-google-dork-aratma" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i> GitHub Reposu</a>
+                    <a href="https://www.google.com/advanced_search" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-google"></i> Google Gelişmiş Arama</a>
+                    <a href="https://www.exploit-db.com/google-hacking-database" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-book"></i> GHDB Rehberi</a>
+                </div>
+                <p style="margin-top: 0.5rem; font-size: 0.75rem;">Bu araç yalnızca yasal güvenlik testleri, sızma testleri ve eğitim amaçlı kullanım içindir.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="modal-overlay" id="shortcutsModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fa-solid fa-keyboard"></i> Klavye Kısayolları</h3>
+                <button type="button" class="modal-close" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.9rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <span>Arama Çubuğuna Odaklan</span>
+                    <kbd style="background: var(--bg-card); padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid var(--border-color); font-family: monospace;">Ctrl + K</kbd>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <span>Aramayı Başlat</span>
+                    <kbd style="background: var(--bg-card); padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid var(--border-color); font-family: monospace;">Enter</kbd>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <span>Sorguyu Panoya Kopyala</span>
+                    <kbd style="background: var(--bg-card); padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid var(--border-color); font-family: monospace;">Ctrl + Shift + C</kbd>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <span>Temayı Değiştir (Gece/Gündüz)</span>
+                    <kbd style="background: var(--bg-card); padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid var(--border-color); font-family: monospace;">Alt + T</kbd>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 0.5rem;">
+                    <span>Girdiyi Temizle</span>
+                    <kbd style="background: var(--bg-card); padding: 0.2rem 0.6rem; border-radius: 4px; border: 1px solid var(--border-color); font-family: monospace;">Escape</kbd>
+                </div>
             </div>
         </div>
-
-        
-
-       </div>
-<py-script>
-  from js import document, window
-
-  def ara():
-    if document.getElementById("files").value != "":
-      select_element = document.getElementById("files")
-      select_element2 = document.getElementById("dork")
-      selected_value = select_element.value
-      selected_value2 = select_element2.value
-      output_element = document.getElementById("output")
-      output_element2 = document.getElementById("output2")
-      search_url = f"https://www.google.com/search?q=filetype:{selected_value}+{selected_value2}"
-      window.open(search_url, "_blank")
-    elif document.getElementById("baslik").checked:
-      select_element2 = document.getElementById("dork")
-      selected_value2 = select_element2.value
-      search_url = f"https://www.google.com/search?q=intitle:{selected_value2}"
-      window.open(search_url, "_blank")
-      document.getElementById("baslik").checked = False
-    elif document.getElementById("alternatif").checked:
-      select_element2 = document.getElementById("dork")
-      selected_value2 = select_element2.value
-      search_url = f"https://www.google.com/search?q=related:{selected_value2}"
-      window.open(search_url, "_blank")
-      document.getElementById("alternatif").checked = False
-    elif document.getElementById("haber").checked:
-      select_element2 = document.getElementById("dork")
-      selected_value2 = select_element2.value
-      search_url = f"https://www.google.com/search?q=news:{selected_value2}"
-      window.open(search_url, "_blank")
-      document.getElementById("haber").checked = False
-</py-script>
-      
-       
     </div>
-    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="data/ghdb.js"></script>
+    <!-- Application Script (High Performance Native Vanilla JS Engine) -->
+    <script>
+        (function() {
+            // State
+            const state = {
+                activeEngine: 'google',
+                activeCategory: 'files',
+                selectedFileType: '',
+                selectedOperator: '',
+                selectedSnippet: '',
+                selectedSnippets: [],
+                theme: localStorage.getItem('dorkfinder_theme') || 'dark',
+                history: JSON.parse(localStorage.getItem('dorkfinder_history') || '[]')
+            };
+
+            // DOM Elements
+            const dorkInput = document.getElementById('dorkInput');
+            const targetSiteInput = document.getElementById('targetSiteInput');
+            const excludeInput = document.getElementById('excludeInput');
+            const mustIncludeInput = document.getElementById('mustIncludeInput');
+            const afterDateInput = document.getElementById('afterDateInput');
+            const beforeDateInput = document.getElementById('beforeDateInput');
+            const searchSubmitBtn = document.getElementById('searchSubmitBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const micBtn = document.getElementById('micBtn');
+            const liveDorkCode = document.getElementById('liveDorkCode');
+            const copyDorkBtn = document.getElementById('copyDorkBtn');
+            const engineTabs = document.querySelectorAll('.engine-tab');
+            const categoryTabs = document.querySelectorAll('.category-tab-btn');
+            const chipButtons = document.querySelectorAll('.chip-btn');
+            const presetCards = document.querySelectorAll('.preset-card');
+            const historyContainer = document.getElementById('historyContainer');
+            const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            const shortcutsBtn = document.getElementById('shortcutsBtn');
+            const shortcutsModal = document.getElementById('shortcutsModal');
+            const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+            // Apply Theme
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                state.theme = theme;
+                localStorage.setItem('dorkfinder_theme', theme);
+                if (theme === 'dark') {
+                    themeIcon.className = 'fa-solid fa-moon';
+                    themeText.textContent = 'Karanlık';
+                } else {
+                    themeIcon.className = 'fa-solid fa-sun';
+                    themeText.textContent = 'Aydınlık';
+                }
+            }
+            applyTheme(state.theme);
+
+            themeToggleBtn.addEventListener('click', () => {
+                applyTheme(state.theme === 'dark' ? 'light' : 'dark');
+                showToast(`Tema değiştirildi: ${state.theme === 'dark' ? 'Karanlık' : 'Aydınlık'}`);
+            });
+
+            // Build Live Query
+            function buildDorkQuery() {
+                const keyword = dorkInput.value.trim();
+                const site = targetSiteInput.value.trim();
+                let queryParts = [];
+
+                if (site) {
+                    const cleanSite = site.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+                    queryParts.push(`site:${cleanSite}`);
+                }
+
+                if (state.selectedFileType) {
+                    queryParts.push(`filetype:${state.selectedFileType.toLowerCase()}`);
+                }
+
+                if (state.selectedSnippets.length) {
+                    queryParts.push(`(${state.selectedSnippets.join(' OR ')})`);
+                }
+
+                if (state.selectedOperator) {
+                    if (keyword) {
+                        queryParts.push(`${state.selectedOperator}"${keyword}"`);
+                    } else {
+                        queryParts.push(state.selectedOperator);
+                    }
+                } else if (keyword) {
+                    queryParts.push(keyword);
+                }
+
+                if (mustIncludeInput.value.trim()) queryParts.push(`"${mustIncludeInput.value.trim().replace(/^\"|\"$/g, '')}"`);
+                if (excludeInput.value.trim()) queryParts.push(...excludeInput.value.trim().split(/\s+/).map(term => term.startsWith('-') ? term : `-${term}`));
+                if (afterDateInput.value) queryParts.push(`after:${afterDateInput.value}`);
+                if (beforeDateInput.value) queryParts.push(`before:${beforeDateInput.value}`);
+
+                return queryParts.join(' ').trim();
+            }
+
+            // Update Preview Display
+            function updatePreview() {
+                const finalQuery = buildDorkQuery();
+                if (!finalQuery) {
+                    liveDorkCode.textContent = "Henüz sorgu oluşturulmadı...";
+                    liveDorkCode.style.color = "var(--text-muted)";
+                } else {
+                    liveDorkCode.style.color = "var(--accent-emerald)";
+                    liveDorkCode.textContent = finalQuery;
+                }
+                clearBtn.style.display = dorkInput.value ? 'flex' : 'none';
+            }
+
+            // Execute Search
+            function executeSearch(customQuery) {
+                const query = (typeof customQuery === 'string' && customQuery.trim()) ? customQuery.trim() : buildDorkQuery();
+                if (!query) {
+                    showToast('Lütfen aranacak bir kelime veya dork seçeneği belirleyin!', 'warning');
+                    dorkInput.focus();
+                    return;
+                }
+
+                // Add to history
+                saveToHistory(query);
+
+                // Engine URLs
+                let searchUrl = '';
+                const encoded = encodeURIComponent(query);
+
+                switch (state.activeEngine) {
+                    case 'google':
+                        searchUrl = `https://www.google.com/search?q=${encoded}`;
+                        break;
+                    case 'duckduckgo':
+                        searchUrl = `https://duckduckgo.com/?q=${encoded}`;
+                        break;
+                    case 'bing':
+                        searchUrl = `https://www.bing.com/search?q=${encoded}`;
+                        break;
+                    case 'yandex':
+                        searchUrl = `https://yandex.com/search/?text=${encoded}`;
+                        break;
+                    case 'shodan':
+                        searchUrl = `https://www.shodan.io/search?query=${encoded}`;
+                        break;
+                    default:
+                        searchUrl = `https://www.google.com/search?q=${encoded}`;
+                }
+
+                window.open(searchUrl, '_blank', 'noopener,noreferrer');
+                showToast(`Arama ${state.activeEngine.toUpperCase()} üzerinde açıldı!`);
+            }
+
+            // Toast Helper
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                let icon = 'fa-circle-info';
+                let color = 'var(--accent-cyan)';
+
+                if (type === 'success') {
+                    icon = 'fa-circle-check';
+                    color = 'var(--accent-emerald)';
+                } else if (type === 'warning') {
+                    icon = 'fa-triangle-exclamation';
+                    color = 'var(--accent-amber)';
+                }
+
+                toast.innerHTML = `<i class="fa-solid ${icon}" style="color: ${color};"></i> <span>${message}</span>`;
+                document.getElementById('toastContainer').appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(20px)';
+                    toast.style.transition = 'all 0.3s ease';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            // History Management
+            function saveToHistory(query) {
+                state.history = state.history.filter(item => item !== query);
+                state.history.unshift(query);
+                if (state.history.length > 10) state.history.pop();
+                localStorage.setItem('dorkfinder_history', JSON.stringify(state.history));
+                renderHistory();
+            }
+
+            function renderHistory() {
+                historyContainer.innerHTML = '';
+                if (state.history.length === 0) {
+                    historyContainer.innerHTML = '<span class="empty-history">Henüz geçmiş aramanız bulunmuyor.</span>';
+                    return;
+                }
+
+                state.history.forEach((item, index) => {
+                    const tag = document.createElement('div');
+                    tag.className = 'history-tag';
+                    tag.innerHTML = `
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>${escapeHtml(item)}</span>
+                        <i class="fa-solid fa-times" title="Sil"></i>
+                    `;
+
+                    // Click item to load
+                    tag.querySelector('span').addEventListener('click', () => {
+                        dorkInput.value = item;
+                        resetChips();
+                        updatePreview();
+                        showToast('Geçmiş sorgu yüklendi');
+                    });
+
+                    // Remove single item
+                    tag.querySelector('.fa-times').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        state.history.splice(index, 1);
+                        localStorage.setItem('dorkfinder_history', JSON.stringify(state.history));
+                        renderHistory();
+                    });
+
+                    historyContainer.appendChild(tag);
+                });
+            }
+
+            function escapeHtml(string) {
+                const div = document.createElement('div');
+                div.textContent = string;
+                return div.innerHTML;
+            }
+
+            clearHistoryBtn.addEventListener('click', () => {
+                state.history = [];
+                localStorage.setItem('dorkfinder_history', '[]');
+                renderHistory();
+                showToast('Arama geçmişi temizlendi');
+            });
+
+            // Reset chips
+            function resetChips() {
+                state.selectedFileType = '';
+                state.selectedOperator = '';
+                state.selectedSnippet = '';
+                state.selectedSnippets = [];
+                chipButtons.forEach(btn => btn.classList.remove('selected'));
+            }
+
+            // Engine Tab Selection
+            engineTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    engineTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    state.activeEngine = tab.dataset.engine;
+                    showToast(`Arama motoru: ${state.activeEngine.toUpperCase()}`);
+                });
+            });
+
+            // Category Tab Selection
+            categoryTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    categoryTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const targetCat = tab.dataset.cat;
+                    state.activeCategory = targetCat;
+
+                    document.querySelectorAll('.category-panel').forEach(panel => {
+                        panel.style.display = 'none';
+                    });
+                    const activePanel = document.getElementById(`panel-${targetCat}`);
+                    if (activePanel) activePanel.style.display = 'flex';
+                });
+            });
+
+            // Chip Selection Handling
+            chipButtons.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const type = chip.dataset.type;
+                    const val = chip.dataset.val;
+                    const isAlreadySelected = chip.classList.contains('selected');
+
+                    if (type !== 'snippet') {
+                        document.querySelectorAll(`.chip-btn[data-type="${type}"]`).forEach(button => button.classList.remove('selected'));
+                    }
+
+                    if (!isAlreadySelected) {
+                        chip.classList.add('selected');
+                        if (type === 'filetype') state.selectedFileType = val;
+                        if (type === 'op') state.selectedOperator = val;
+                        if (type === 'snippet') state.selectedSnippets.push(val);
+                    } else {
+                        chip.classList.remove('selected');
+                        if (type === 'filetype') state.selectedFileType = '';
+                        if (type === 'op') state.selectedOperator = '';
+                        if (type === 'snippet') state.selectedSnippets = state.selectedSnippets.filter(item => item !== val);
+                    }
+
+                    updatePreview();
+                });
+            });
+
+            // Scenario Presets: Filtering, Live Search, and Actions
+            const presetSearchInput = document.getElementById('presetSearchInput');
+            const presetCountBadge = document.getElementById('presetCountBadge');
+            const presetFilterChips = document.querySelectorAll('.preset-filter-chip');
+            const presetCardsGrid = document.getElementById('presetCardsGrid');
+            let activePresetFilter = 'all';
+
+            function filterPresetCards() {
+                const searchTerm = (presetSearchInput ? presetSearchInput.value.toLowerCase().trim() : '');
+                let visibleCount = 0;
+                let emptyStateEl = document.getElementById('presetsEmptyState');
+
+                presetCards.forEach(card => {
+                    const category = card.dataset.category || '';
+                    const name = (card.dataset.presetName || '').toLowerCase();
+                    const query = (card.dataset.presetQuery || '').toLowerCase();
+                    const text = card.textContent.toLowerCase();
+
+                    const matchesCategory = (activePresetFilter === 'all' || category === activePresetFilter);
+                    const matchesSearch = !searchTerm || name.includes(searchTerm) || query.includes(searchTerm) || text.includes(searchTerm);
+
+                    if (matchesCategory && matchesSearch) {
+                        card.style.display = 'flex';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (presetCountBadge) {
+                    if (visibleCount === presetCards.length) {
+                        presetCountBadge.textContent = `${presetCards.length} Senaryo`;
+                    } else {
+                        presetCountBadge.textContent = `${visibleCount} / ${presetCards.length} Senaryo`;
+                    }
+                }
+
+                if (visibleCount === 0) {
+                    if (!emptyStateEl && presetCardsGrid) {
+                        emptyStateEl = document.createElement('div');
+                        emptyStateEl.id = 'presetsEmptyState';
+                        emptyStateEl.className = 'presets-empty-state';
+                        emptyStateEl.innerHTML = `
+                            <i class="fa-solid fa-filter-circle-xmark"></i>
+                            <p>Aradığınız kriterlere uygun senaryo bulunamadı.</p>
+                            <button type="button" class="nav-btn" style="margin-top: 0.75rem;" id="resetPresetFilterBtn">
+                                Filtreleri Sıfırla
+                            </button>
+                        `;
+                        presetCardsGrid.appendChild(emptyStateEl);
+                        document.getElementById('resetPresetFilterBtn')?.addEventListener('click', () => {
+                            if (presetSearchInput) presetSearchInput.value = '';
+                            activePresetFilter = 'all';
+                            presetFilterChips.forEach(c => c.classList.toggle('active', c.dataset.filter === 'all'));
+                            filterPresetCards();
+                        });
+                    }
+                    if (emptyStateEl) emptyStateEl.style.display = 'block';
+                } else if (emptyStateEl) {
+                    emptyStateEl.style.display = 'none';
+                }
+            }
+
+            if (presetSearchInput) {
+                presetSearchInput.addEventListener('input', filterPresetCards);
+            }
+
+            presetFilterChips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    presetFilterChips.forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    activePresetFilter = chip.dataset.filter;
+                    filterPresetCards();
+                });
+            });
+
+            // Preset Cards Event Delegation & Action Handling
+            presetCards.forEach(card => {
+                const query = card.dataset.presetQuery;
+                const name = card.dataset.presetName;
+
+                // Load query into editor function
+                const loadToEditor = () => {
+                    dorkInput.value = query;
+                    resetChips();
+                    updatePreview();
+                    showToast(`"${name}" şablonu yüklendi!`, 'success');
+                    dorkInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    dorkInput.focus();
+                };
+
+                // Entire card click (unless clicking action buttons)
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.preset-card-actions')) return;
+                    loadToEditor();
+                });
+
+                // Apply button click
+                const applyBtn = card.querySelector('.btn-apply');
+                if (applyBtn) {
+                    applyBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        loadToEditor();
+                    });
+                }
+
+                // Direct search button click
+                const directSearchBtn = card.querySelector('.btn-direct-search');
+                if (directSearchBtn) {
+                    directSearchBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        let targetQuery = query;
+                        const site = targetSiteInput.value.trim();
+                        if (site) {
+                            const cleanSite = site.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+                            targetQuery = `site:${cleanSite} ${query}`;
+                        }
+                        executeSearch(targetQuery);
+                    });
+                }
+
+                // Copy button click
+                const copyBtn = card.querySelector('.btn-copy');
+                if (copyBtn) {
+                    copyBtn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        try {
+                            await navigator.clipboard.writeText(query);
+                        } catch (err) {
+                            const ta = document.createElement('textarea');
+                            ta.value = query;
+                            document.body.appendChild(ta);
+                            ta.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(ta);
+                        }
+                        const origHtml = copyBtn.innerHTML;
+                        copyBtn.innerHTML = '<i class="fa-solid fa-check" style="color: var(--accent-emerald);"></i>';
+                        showToast(`"${name}" dork kodu kopyalandı!`, 'success');
+                        setTimeout(() => {
+                            copyBtn.innerHTML = origHtml;
+                        }, 1600);
+                    });
+                }
+            });
+
+            // Live Input Listeners
+            dorkInput.addEventListener('input', updatePreview);
+            targetSiteInput.addEventListener('input', updatePreview);
+            [excludeInput, mustIncludeInput, afterDateInput, beforeDateInput].forEach(input => input.addEventListener('input', updatePreview));
+
+            // Clear Button
+            clearBtn.addEventListener('click', () => {
+                dorkInput.value = '';
+                resetChips();
+                updatePreview();
+                dorkInput.focus();
+            });
+
+            // Search Trigger
+            searchSubmitBtn.addEventListener('click', executeSearch);
+            dorkInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    executeSearch();
+                }
+            });
+            targetSiteInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    executeSearch();
+                }
+            });
+
+            // Copy Dork Button
+            copyDorkBtn.addEventListener('click', async () => {
+                const query = buildDorkQuery();
+                if (!query) {
+                    showToast('Kopyalanacak dork sorgusu yok!', 'warning');
+                    return;
+                }
+                try {
+                    await navigator.clipboard.writeText(query);
+                    showToast('Dork sorgusu panoya kopyalandı!', 'success');
+                } catch (err) {
+                    // Fallback
+                    const ta = document.createElement('textarea');
+                    ta.value = query;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    showToast('Dork sorgusu panoya kopyalandı!', 'success');
+                }
+            });
+
+            // Microphone Voice Search (Web Speech API)
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'tr-TR';
+                recognition.interimResults = false;
+                recognition.continuous = false;
+
+                let isRecording = false;
+
+                micBtn.addEventListener('click', () => {
+                    if (isRecording) {
+                        recognition.stop();
+                        return;
+                    }
+                    try {
+                        recognition.start();
+                        micBtn.classList.add('active-mic');
+                        showToast('Mikrofon dinliyor... Aranacak ifadeyi söyleyin');
+                        isRecording = true;
+                    } catch (e) {
+                        console.error(e);
+                    }
+                });
+
+                recognition.onresult = (event) => {
+                    const speechResult = event.results[0][0].transcript;
+                    dorkInput.value = speechResult;
+                    updatePreview();
+                    showToast(`Söylenen: "${speechResult}"`, 'success');
+                };
+
+                recognition.onspeechend = () => {
+                    recognition.stop();
+                    micBtn.classList.remove('active-mic');
+                    isRecording = false;
+                };
+
+                recognition.onerror = (event) => {
+                    micBtn.classList.remove('active-mic');
+                    isRecording = false;
+                    showToast('Ses tanıma hatası veya mikrofon izni verilmedi', 'warning');
+                };
+            } else {
+                micBtn.addEventListener('click', () => {
+                    showToast('Tarayıcınız Web Speech ses tanıma API\'sini desteklemiyor.', 'warning');
+                });
+            }
+
+            // Keyboard Shortcuts Modal
+            shortcutsBtn.addEventListener('click', () => {
+                shortcutsModal.classList.add('active');
+            });
+            modalCloseBtn.addEventListener('click', () => {
+                shortcutsModal.classList.remove('active');
+            });
+            shortcutsModal.addEventListener('click', (e) => {
+                if (e.target === shortcutsModal) {
+                    shortcutsModal.classList.remove('active');
+                }
+            });
+
+            // Global Shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Ctrl + K -> Focus Search
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    dorkInput.focus();
+                    dorkInput.select();
+                }
+                // Ctrl + Shift + C -> Copy Dork
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'c') {
+                    e.preventDefault();
+                    copyDorkBtn.click();
+                }
+                // Alt + T -> Toggle Theme
+                if (e.altKey && e.key.toLowerCase() === 't') {
+                    e.preventDefault();
+                    themeToggleBtn.click();
+                }
+                // Escape -> Close modal or clear
+                if (e.key === 'Escape') {
+                    if (shortcutsModal.classList.contains('active')) {
+                        shortcutsModal.classList.remove('active');
+                    } else if (document.activeElement === dorkInput) {
+                        dorkInput.value = '';
+                        updatePreview();
+                    }
+                }
+            });
+
+            // GHDB archive catalog: download only on request, then cache locally in IndexedDB.
+            const ghdbState = { entries: [], page: 0, pageSize: 20 };
+            const ghdbLoadBtn = document.getElementById('loadGhdbBtn');
+            const ghdbImportBtn = document.getElementById('importGhdbBtn');
+            const ghdbExportBtn = document.getElementById('exportGhdbBtn');
+            const ghdbFileInput = document.getElementById('ghdbFileInput');
+            const ghdbSearchInput = document.getElementById('ghdbSearchInput');
+            const ghdbCategorySelect = document.getElementById('ghdbCategorySelect');
+            const ghdbCount = document.getElementById('ghdbCount');
+            const ghdbStatus = document.getElementById('ghdbStatus');
+            const ghdbResults = document.getElementById('ghdbResults');
+            const ghdbPrevBtn = document.getElementById('ghdbPrevBtn');
+            const ghdbNextBtn = document.getElementById('ghdbNextBtn');
+            const ghdbPageLabel = document.getElementById('ghdbPageLabel');
+            const GHDB_URL = 'https://gitlab.com/exploit-database/exploitdb/-/raw/main/ghdb.xml';
+            const BUNDLED_GHDB_DATE = '2026-10-25T19:08:32.000Z';
+
+            function ghdbDatabase() {
+                return new Promise((resolve, reject) => {
+                    if (!('indexedDB' in window)) return reject(new Error('Tarayıcı yerel veri deposunu desteklemiyor.'));
+                    const request = indexedDB.open('dorkfinder-ghdb', 1);
+                    request.onupgradeneeded = () => request.result.createObjectStore('archives');
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+
+            async function ghdbCache(action, data) {
+                const db = await ghdbDatabase();
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction('archives', action === 'get' ? 'readonly' : 'readwrite');
+                    const store = transaction.objectStore('archives');
+                    const request = action === 'get' ? store.get('current') : store.put(data, 'current');
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                    transaction.oncomplete = () => db.close();
+                    transaction.onerror = () => { db.close(); reject(transaction.error); };
+                });
+            }
+
+            function parseGhdbXml(xmlText) {
+                const xml = new DOMParser().parseFromString(xmlText, 'application/xml');
+                if (xml.querySelector('parsererror')) throw new Error('XML dosyası okunamadı veya biçimi geçersiz.');
+                return Array.from(xml.querySelectorAll('ghdb > entry, root > entry, entry')).map(entry => {
+                    const get = name => entry.querySelector(name)?.textContent?.trim() || '';
+                    return {
+                        id: get('id'), title: get('shortDescription') || get('title') || 'Başlıksız GHDB kaydı',
+                        query: get('query'), category: get('category') || 'Diğer', author: get('author'),
+                        date: get('date'), description: get('textualDescription'),
+                        link: get('link'), querystring: get('querystring'), edb: get('edb')
+                    };
+                }).filter(entry => entry.query);
+            }
+
+            function setGhdbEntries(entries, savedAt = new Date().toISOString()) {
+                const seen = new Set();
+                ghdbState.entries = entries.filter(entry => {
+                    const key = `${entry.id}|${entry.query}`;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+                ghdbState.savedAt = savedAt;
+                ghdbState.page = 0;
+                const categories = [...new Set(ghdbState.entries.map(entry => entry.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'tr'));
+                ghdbCategorySelect.replaceChildren(new Option('Tüm kategoriler', ''));
+                categories.forEach(category => ghdbCategorySelect.add(new Option(category, category)));
+                ghdbCategorySelect.disabled = false;
+                ghdbSearchInput.disabled = false;
+                ghdbExportBtn.disabled = false;
+                const uniqueQueries = new Set(ghdbState.entries.map(entry => entry.query.trim())).size;
+                const repeated = ghdbState.entries.length - uniqueQueries;
+                ghdbStatus.textContent = `${ghdbState.entries.length.toLocaleString('tr-TR')} kayıt hazır · ${uniqueQueries.toLocaleString('tr-TR')} benzersiz sorgu · ${repeated.toLocaleString('tr-TR')} tekrar · Kopya: ${new Date(savedAt).toLocaleString('tr-TR')}`;
+                renderGhdbResults();
+            }
+
+            function renderGhdbResults() {
+                const term = ghdbSearchInput.value.trim().toLocaleLowerCase('tr');
+                const category = ghdbCategorySelect.value;
+                const matching = ghdbState.entries.filter(entry => {
+                    if (category && entry.category !== category) return false;
+                    return !term || [entry.title, entry.query, entry.category, entry.author, entry.description].join(' ').toLocaleLowerCase('tr').includes(term);
+                });
+                const pageCount = Math.max(1, Math.ceil(matching.length / ghdbState.pageSize));
+                ghdbState.page = Math.min(ghdbState.page, pageCount - 1);
+                const pageEntries = matching.slice(ghdbState.page * ghdbState.pageSize, (ghdbState.page + 1) * ghdbState.pageSize);
+                ghdbCount.textContent = `${matching.length.toLocaleString('tr-TR')} / ${ghdbState.entries.length.toLocaleString('tr-TR')} kayıt`;
+                ghdbPageLabel.textContent = `${ghdbState.page + 1} / ${pageCount}`;
+                ghdbPrevBtn.disabled = ghdbState.page === 0;
+                ghdbNextBtn.disabled = ghdbState.page >= pageCount - 1;
+                ghdbResults.replaceChildren();
+                if (!pageEntries.length) {
+                    const empty = document.createElement('p');
+                    empty.className = 'empty-history';
+                    empty.textContent = 'Bu filtrelerle eşleşen kayıt bulunamadı.';
+                    ghdbResults.appendChild(empty);
+                    return;
+                }
+                pageEntries.forEach(entry => {
+                    const card = document.createElement('article');
+                    card.className = 'ghdb-entry';
+                    const top = document.createElement('div');
+                    top.className = 'ghdb-entry-top';
+                    const categoryBadge = document.createElement('span');
+                    categoryBadge.textContent = entry.category;
+                    const id = document.createElement('span');
+                    id.textContent = entry.id ? `GHDB #${entry.id}` : 'GHDB';
+                    top.append(categoryBadge, id);
+                    const title = document.createElement('h3');
+                    title.className = 'ghdb-entry-title';
+                    title.textContent = entry.title;
+                    const query = document.createElement('code');
+                    query.className = 'ghdb-entry-query';
+                    query.textContent = entry.query;
+                    card.append(top, title, query);
+                    if (entry.description) {
+                        const description = document.createElement('p');
+                        description.className = 'ghdb-entry-description';
+                        description.textContent = entry.description;
+                        card.appendChild(description);
+                    }
+                    const footer = document.createElement('div');
+                    footer.className = 'ghdb-entry-footer';
+                    const metadata = document.createElement('span');
+                    metadata.textContent = [entry.author, entry.date].filter(Boolean).join(' · ');
+                    footer.appendChild(metadata);
+                    const useButton = document.createElement('button');
+                    useButton.type = 'button';
+                    useButton.textContent = 'Sorguya aktar';
+                    useButton.addEventListener('click', () => {
+                        dorkInput.value = entry.query;
+                        targetSiteInput.value = '';
+                        resetChips();
+                        updatePreview();
+                        dorkInput.focus();
+                        showToast('GHDB sorgusu arama alanına aktarıldı', 'success');
+                    });
+                    footer.appendChild(useButton);
+                    if (/^\d+$/.test(entry.id)) {
+                        const sourceLink = document.createElement('a');
+                        sourceLink.href = `https://www.exploit-db.com/ghdb/${entry.id}`;
+                        sourceLink.target = '_blank';
+                        sourceLink.rel = 'noopener noreferrer';
+                        sourceLink.textContent = 'Kaynak kaydı';
+                        footer.appendChild(sourceLink);
+                    }
+                    card.appendChild(footer);
+                    ghdbResults.appendChild(card);
+                });
+            }
+
+            async function importGhdbText(text) {
+                const entries = parseGhdbXml(text);
+                if (!entries.length) throw new Error('XML içinde kullanılabilir dork kaydı bulunamadı.');
+                const payload = { entries, savedAt: new Date().toISOString() };
+                await ghdbCache('put', payload);
+                setGhdbEntries(entries, payload.savedAt);
+            }
+
+            ghdbLoadBtn.addEventListener('click', async () => {
+                if (!Array.isArray(window.GHDB_ARCHIVE)) {
+                    ghdbStatus.textContent = 'data/ghdb.js dosyası açılamadı. Proje klasörünün tamamını birlikte kullanın.';
+                    return;
+                }
+                setGhdbEntries(window.GHDB_ARCHIVE, BUNDLED_GHDB_DATE);
+                showToast('Projeye ekli GHDB arşivi yüklendi', 'success');
+            });
+
+            ghdbImportBtn.addEventListener('click', () => ghdbFileInput.click());
+            ghdbFileInput.addEventListener('change', async () => {
+                const file = ghdbFileInput.files?.[0];
+                if (!file) return;
+                ghdbStatus.textContent = `${file.name} okunuyor...`;
+                try {
+                    await importGhdbText(await file.text());
+                    showToast('GHDB XML arşivi içe aktarıldı', 'success');
+                } catch (error) {
+                    ghdbStatus.textContent = error.message || 'XML içe aktarılamadı.';
+                    showToast(ghdbStatus.textContent, 'warning');
+                } finally {
+                    ghdbFileInput.value = '';
+                }
+            });
+            ghdbSearchInput.addEventListener('input', () => { ghdbState.page = 0; renderGhdbResults(); });
+            ghdbCategorySelect.addEventListener('change', () => { ghdbState.page = 0; renderGhdbResults(); });
+            ghdbPrevBtn.addEventListener('click', () => { ghdbState.page--; renderGhdbResults(); });
+            ghdbNextBtn.addEventListener('click', () => { ghdbState.page++; renderGhdbResults(); });
+            ghdbExportBtn.addEventListener('click', () => {
+                const blob = new Blob([JSON.stringify({ source: GHDB_URL, exportedAt: new Date().toISOString(), entries: ghdbState.entries }, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'dorkfinder-ghdb.json';
+                link.click();
+                URL.revokeObjectURL(url);
+            });
+            ghdbCache('get').then(cached => {
+                if (cached?.entries?.length && new Date(cached.savedAt) > new Date(BUNDLED_GHDB_DATE)) {
+                    setGhdbEntries(cached.entries, cached.savedAt);
+                } else if (Array.isArray(window.GHDB_ARCHIVE)) {
+                    setGhdbEntries(window.GHDB_ARCHIVE, BUNDLED_GHDB_DATE);
+                }
+            }).catch(() => {
+                if (Array.isArray(window.GHDB_ARCHIVE)) setGhdbEntries(window.GHDB_ARCHIVE, BUNDLED_GHDB_DATE);
+            });
+
+            // Initialize History
+            renderHistory();
+            updatePreview();
+        })();
+    </script>
 </body>
 </html>
